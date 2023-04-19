@@ -80,20 +80,20 @@ class TweetsByUserRunner:
         return
 
     def _filter_result(self, user_tweet_raw: List[UserTweetRaw]) -> List[UserTweetRaw]:
-        if len(user_tweet_raw) == 0:
-            return user_tweet_raw
-
         ctx = self.tweets_by_user_context
+        if len(user_tweet_raw) == 0:
+            ctx.stop = True
+            return user_tweet_raw
         if self.tweets_by_user_task.until:
             # todo : user binary search
             for idx, tweet_raw in enumerate(user_tweet_raw):
                 tweet = json.loads(tweet_raw.raw_value)
                 create_at = arrow.get(tweet['legacy']['created_at'], "ddd MMM DD HH:mm:ss Z YYYY")
                 if create_at <= self.tweets_by_user_task.until:
-                    self.tweets_by_user_context.stop = True
+                    ctx.stop = True
                     return user_tweet_raw[:idx]
         elif ctx.all_download_tweets_count + len(user_tweet_raw) >= self.tweets_by_user_task.tweets_limit:
-            self.tweets_by_user_context.stop = True
+            ctx.stop = True
             return user_tweet_raw[:self.tweets_by_user_task.tweets_limit - ctx.all_download_tweets_count]
         return user_tweet_raw
 
