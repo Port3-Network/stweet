@@ -14,7 +14,7 @@ def tweets_by_id():
 
 
 def tweets_by_user():
-    user_tweets_task = st.TweetsByUserTask('1368057450134310914')
+    user_tweets_task = st.TweetsByUserTask('1412390172541423617')
     output_json = st.JsonLineFileRawOutput('output_raw_user_tweets.jl')
     st.TweetsByUserRunner(
         tweets_by_user_task=user_tweets_task,
@@ -430,6 +430,13 @@ def tweets_by_user_proxy():
             raw_data_outputs=[output_print, output_json],
             web_client=web_client,
         ).run()
+
+
+def try_user_scrap():
+    user_task = st.GetUsersTask(['elonmusk'])
+    output_json = st.JsonLineFileRawOutput('output_raw_user.jl')
+    output_print = st.PrintRawOutput()
+    st.GetUsersRunner(get_user_task=user_task, raw_data_outputs=[output_print, output_json]).run()
 
 
 if __name__ == '__main__':
